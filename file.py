@@ -16,36 +16,25 @@ class Student:
         else:
             return 'Ошибка'
 
-    def get_average_on_course(self, name_course, all_students):
-        all_grades = []
-        for student in all_students:
-            if isinstance(student, Student) and name_course in student.courses_in_progress and name_course in student.grades:
-                all_grades += student.grades[name_course]
-        for grade in all_grades:
-            if all_grades:
-                return round(sum(all_grades) / len(all_grades), 1)
-            else:
-                return 'Ошибка'
-
     def get_average(self):
         all_grades = [grade for grades in self.grades.values() for grade in grades]
-        if all_grades:
+        if all_grades and all(isinstance(grade, (int, float)) for grade in all_grades):
             return round(sum(all_grades) / len(all_grades), 1)
-        return 'Ошибка'
+        return 0
 
     def __gt__(self, other):
         if not isinstance(other, Student):
-            return 'Ошибка'
+            return NotImplemented
         return self.get_average() > other.get_average()
 
     def __lt__(self, other):
         if not isinstance(other, Student):
-            return 'Ошибка'
+            return NotImplemented
         return self.get_average() < other.get_average()
 
     def __eq__(self, other):
         if not isinstance(other, Student):
-            return 'Ошибка'
+            return NotImplemented
         return self.get_average() == other.get_average()
 
     def __str__(self):
@@ -76,35 +65,24 @@ class Lecturer(Mentor):
         super().__init__(name, surname)
         self.grades = {}
 
-    def get_average_on_course(self, name_course, all_lecturers):
-        all_grades = []
-        for lecturer in all_lecturers:
-            if isinstance(lecturer, Lecturer) and name_course in lecturer.courses_attached and name_course in lecturer.grades:
-                all_grades += student.grades[name_course]
-        for grade in all_grades:
-            if all_grades:
-                return round(sum(all_grades) / len(all_grades), 1)
-            else:
-                return 'Ошибка'
-
     def get_average(self):
         all_grades = [grade for grades in self.grades.values() for grade in grades]
-        if all_grades:
+        if all_grades and all(isinstance(grade, (int, float)) for grade in all_grades):
             return round(sum(all_grades) / len(all_grades), 1)
         return 0
     def __gt__(self, other):
         if not isinstance(other, Lecturer):
-            return 'Ошибка'
+            return NotImplemented
         return self.get_average() > other.get_average()
 
     def __lt__(self, other):
         if not isinstance(other, Lecturer):
-            return 'Ошибка'
+            return NotImplemented
         return self.get_average() < other.get_average()
 
     def __eq__(self, other):
         if not isinstance(other, Lecturer):
-            return 'Ошибка'
+            return NotImplemented
         return self.get_average() == other.get_average()
 
     def __str__(self):
@@ -120,6 +98,26 @@ class Reviewer(Mentor):
         super().__init__(name, surname)
     def __str__(self):
         return f"Имя: {self.name} \nФамилия: {self.surname}"
+
+def average_hw_grade_for_course(name_course, all_students):
+        all_grades = []
+        for student in all_students:
+            if isinstance(student, Student) and name_course in student.courses_in_progress and name_course in student.grades:
+                all_grades += student.grades[name_course]
+        if all_grades:
+            return round(sum(all_grades) / len(all_grades), 1)
+        else:
+            return 'Ошибка'
+
+def average_lecture_grade_for_course(name_course, all_lecturers):
+        all_grades = []
+        for lecturer in all_lecturers:
+            if isinstance(lecturer, Lecturer) and name_course in lecturer.courses_attached and name_course in lecturer.grades:
+                all_grades += lecturer.grades[name_course]
+        if all_grades:
+            return round(sum(all_grades) / len(all_grades), 1)
+        else:
+            return 'Ошибка'
 
 all_students = []
 all_mentors = []
@@ -169,7 +167,7 @@ print(student2.rate_lecture(lecturer1, 'Java', 9))
 print(student2.rate_lecture(lecturer2, 'C++', 6))
 print(student2.rate_lecture(lecturer1, 'Java', 8))
 
-print(student2.rate_lecture(lecturer2, 'С++', 6))
+print(student2.rate_lecture(lecturer2, 'C++', 6))
 print(student1.rate_lecture(lecturer2, 'Java', 8))
 print(student1.grades)
 
@@ -216,9 +214,9 @@ print(student1 < student2)
 # Тесты (Задание 4)
 
 # Для лекторов
-print(student1.get_average_on_course('Python', all_students))
-print(student2.get_average_on_course('C++', all_students))
+print(average_hw_grade_for_course('Python', all_students))
+print(average_hw_grade_for_course('C++', all_students))
 
 # Для студентов
-print(lecturer1.get_average_on_course('Python', all_lecturers))
-print(lecturer2.get_average_on_course('Java', all_lecturers))
+print(average_lecture_grade_for_course('Python', all_lecturers))
+print(average_lecture_grade_for_course('Java', all_lecturers))
